@@ -51,11 +51,11 @@ sub finalize   {undef}
 
 sub DESTROY {
 	my $me = shift;
-	$me->finalize();
 	
 	if (DEBUG) {
 		_debug("Destroying object: ", $me);
 	}
+	$me->finalize();
 }
 
 sub _debug {

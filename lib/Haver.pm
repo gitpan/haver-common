@@ -19,7 +19,7 @@ package Haver;
 use strict;
 use warnings;
 
-our $VERSION = '0.043';
+our $VERSION = '0.05';
 
 1;
 __END__

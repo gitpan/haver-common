@@ -1,7 +1,6 @@
-# Haver::Protocol, Right now this
-# just loads Haver::Protocol::* modules.
+# Haver::Config - Configuration Manager.
 # 
-# Copyright (C) 2003 Dylan William Hardison
+# Copyright (C) 2004 Dylan William Hardison
 #
 # This module is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,109 +15,121 @@
 # You should have received a copy of the GNU General Public License
 # along with this module; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-package Haver::Protocol;
+package Haver::Config;
 use strict;
-use warnings;
+#use warnings;
+use base 'Haver::Base';
+use YAML ();
+use Fatal qw(:void open close);
+use File::stat;
+use File::Basename qw(basename);
 
-use Exporter;
-use base 'Exporter';
+use Haver::Preprocessor;
 
-BEGIN {
-	our @EXPORT    = ();
-	our @EXPORT_OK = qw(
-		escape unescape
-		event2line line2event
-		$CRLF $CR $LF
-		%Escape
-		%Unescape
-	);
-	our %EXPORT_TAGS = (
-		all    => [@EXPORT_OK],
-		escape => [qw( escape unescape )],
-		event  => [qw( event2line line2event )],
-		crlf   => [qw( $CR $LF $CRLF )],
-	);
-}
+our $VERSION = '0.02';
+our $RELOAD = 1;
 
-our $VERSION   = "0.03";
-our $CRLF      = "\x0D\x0A";
-our $CR        = "\x0D";
-our $LF        = "\x0A";
-our %Escape = (
-	$CR    => 'r',
-	$LF    => 'n',
-	"\e"   => 'e',
-	"\t"   => 't',
-);
-our %Unescape = reverse %Escape;
-
-my $Chars = join('', keys %Escape);
-my $Codes = join('', keys %Unescape);
-
-sub escape {
-	my ($s) = @_;
-	$s =~ s/([$Chars])/\e$Escape{$1}/g;
-	return $s;
-}
-
-sub unescape {
-	my ($s) = @_;
-	$s =~ s/\e([$Codes])/$Unescape{$1}/g;
-	return $s;
-}
-
-sub line2event {
-	my ($line) = @_;
-	$line =~ s/$CRLF$//g;
-	my @e = split("\t", $line);
-	foreach (@e) {
-		$_ = unescape($_);
-	}
+sub initialize {
+	my ($me) = @_;
+	my $file = delete $me->{'file'};
 	
-	return wantarray ? @e : \@e;
-}
 
-sub event2line {
-	my @event;
-	if (@_ > 1) {
-		@event = @_;
+
+	if (exists $me->{auto_save}) {
+		$me->{_auto_save} = delete $me->{auto_save};
 	} else {
-		@event = @{$_[0]};
+		$me->{_auto_save} = 1;
 	}
-	foreach (@event) {
-		$_ = escape($_);
+
+	if (defined $file) {
+		$me->load($file);
 	}
+}
+
+
+sub load {
+	my ($me, $file) = @_;
+	ASSERT: @_ == 2;
+	ASSERT: defined $file;
+
+	if (-f $file) {
+		my $fh;
+		open $fh, "<$file";
+		local $/ = undef;
+		my $conf = YAML::Load(readline($fh));
+		close $fh;
+		$me->{_mtime} = stat($file)->mtime;
+		foreach my $key (grep(!/^_/, keys %$conf)) {
+			$me->{$key} = $conf->{$key};
+		}
 	
-	join("\t", @event) . $CRLF;
+	}
+
+	$me->{_file} = $file;
+}
+
+sub auto_save {
+	my ($me, $val) = @_;
+	$me->{_auto_save} = $val;
+}
+
+sub reload {
+	my ($me) = @_;
+	ASSERT: $me->{_file};
+	$me->load($me->{_file});
+}
+
+sub save {
+	my ($me) = @_;
+	my $file  = $me->{'_file'};
+	my $mtime = $me->{'_mtime'};
+	my $t = -f $file ? stat($file)->mtime : $mtime;
+
+	ASSERT: defined $me->{'_file'};
+	
+	if ($mtime == $t) {
+		my %copy;
+		foreach my $key (grep(!/^_/, keys %$me)) {
+			$copy{$key} = $me->{$key};
+		}
+		my $fh;
+		open $fh, 0600, ">$file";
+		print $fh YAML::Dump(\%copy);
+		close $fh;
+	} else {
+		warn "Cowardly refusing to overwrite $file...";
+	}
+
+	$me->{_mtime} = stat($file)->mtime;
+}
+
+
+sub finalize {
+	my ($me) = @_;
+
+	$me->save if $me->{_auto_save};
 }
 
 
 1;
 
-1;
 __END__
 
 =head1 NAME
 
-Haver::Protocol - Loads all protocol-related modules.
+Haver::Config - Configuration manager..
 
 =head1 SYNOPSIS
 
-  use Haver::Protocol;
+  use Haver::Config;
+  my $config = new Haver::Config(file => 'some-file.yaml');
+  
 
 =head1 DESCRIPTION
 
-Currently this just loads Haver::Protocol::Filter. In the future,
-when/if there are more protocol-related modules, it'll load them too.
-
-=head2 EXPORT
-
-Nothing to export.
+FIXME
 
 =head1 SEE ALSO
-
-L<Haver::Protocol::Filter>
 
 L<https://savannah.nongnu.org/projects/haver/>
 

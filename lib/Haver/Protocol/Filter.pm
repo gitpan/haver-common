@@ -21,52 +21,63 @@
 package Haver::Protocol::Filter;
 use warnings;
 use strict;
-
 use POE;
 use base qw(POE::Filter::Line);
+use Haver::Protocol qw( $CRLF %Escape %Unescape );
 
 our $VERSION = "0.02";
+
+
 
 sub new {
 	my ($this) = @_;
 	
-	return $this->SUPER::new(Literal => "\x0D\x0A");
+	return $this->SUPER::new(Literal => $CRLF);
 }
 
 sub get {
-	my ( $self, @args ) = @_;
-	my $res = $self->SUPER::get(@args);
-	for ( @{$res} ) {
-		$_ = [ split "\t", $_ ];
-		if ( exists $_->[0] ) {
-			$_->[0] =~ s/\W//g;
+	my ( $self, $arg) = @_;
+	my $lines = $self->SUPER::get($arg);
+
+	foreach my $line (@{$lines}) {
+		my @f = split("\t", $line);
+		
+		foreach my $item (@f) {
+			$item =~ s/\e([rent])/$Unescape{$1}/g;
 		}
+		$line = \@f;
 	}
-	return $res;
+	return $lines;
 }
 
 sub get_one {
-	my ( $self, @args ) = @_;
-	my $res = $self->SUPER::get_one(@args);
-	for ( @{$res} ) {
-		$_ = [ split "\t", $_ ];
-		if ( exists $_->[0] ) {
-			$_->[0] =~ s/\W//g;
+	my ($self) = @_;
+	my $lines = $self->SUPER::get_one;
+
+	foreach my $line (@{$lines}) {
+		my @f = split("\t", $line);
+		
+		foreach my $item (@f) {
+			$item =~ s/\e([rent])/$Unescape{$1}/g;
 		}
+		$line = \@f;
 	}
-	return $res;
+	return $lines;
 }
 
 sub put {
 	my ( $self, $arg ) = @_;
-	$arg = [ @{$arg} ];
-	for ( @{$arg} ) {
-		if ( exists $_->[0] ) {
-			$_->[0] =~ s/\W//g;
+	my @ret;
+	foreach my $msg (@{$arg}) {
+		my @msg;
+		foreach my $item (@$msg) {
+			my $s = $item;
+			$s =~ s/([\r\e\n\t])/\e$Escape{$1}/g;
+			push(@msg, $s);
 		}
-		$_ = join "\t", @{$_};
+		push(@ret, join "\t", @msg);
 	}
-	return $self->SUPER::put($arg);
+	return $self->SUPER::put(\@ret);
 }
 
 1;

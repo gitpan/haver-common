@@ -5,3 +5,5 @@ store
 blib
 _build
 ^Build$
+^\.#
+^\.cvsignore
