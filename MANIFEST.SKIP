@@ -1,0 +1,7 @@
+\.old$
+CVS
+\.bak
+store
+blib
+_build
+^Build$

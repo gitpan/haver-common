@@ -1,0 +1,86 @@
+2004-02-21  dylanwh <dylanwh@tampabay.rr.com>
+
+	* lib/Haver/Protocol/Errors.pm: Getting ready to release 0.04
+	"Vinegar"!
+
+2004-02-21  bdonlan <bdonlan@bd-home-comp.no-ip.org>
+
+	* lib/Haver/Protocol/Errors.pm: Typo fix
+
+2004-02-21  dylanwh <dylanwh@tampabay.rr.com>
+
+	* Makefile.PL: Lots of new changes... passwords work now. Split off
+	cmd_* stuff into Commands.pm
+
+2004-02-21  dylanwh <dylanwh@tampabay.rr.com>
+
+	* lib/Haver/Singleton.pm: Removed stupid import() hack.  I never
+	used it and it could be confusing.
+
+2004-02-21  dylanwh <dylanwh@tampabay.rr.com>
+
+	* Makefile.PL, lib/Haver.pm, lib/Haver/Utils/Logger.pm: Generalized
+	container stuff in Server::Object::Container, generalized
+	Server::Registry as a Container, same with Server::User and
+	Server::Channel.
+	
+	All startup logic is now in Server.pm.	haverd.pl is just a
+	wrapper.
+
+2004-02-21  dylanwh <dylanwh@tampabay.rr.com>
+
+	* lib/Haver/Utils/Logger.pm: Added some new features to the logger.
+
+2004-02-21  dylanwh <dylanwh@tampabay.rr.com>
+
+	* lib/Haver/Singleton.pm, lib/Haver/Protocol/Errors.pm: Fixed
+	subclassing bug in Haver::Singleton.
+
+2004-02-19  dylanwh <dylanwh@tampabay.rr.com>
+
+	* .cvsignore: Added Changes to various .cvsignore files.
+
+2004-02-18  dylanwh <dylanwh@tampabay.rr.com>
+
+	* MANIFEST, MANIFEST.SKIP, lib/Haver/Protocol/Errors.pm: Added
+	Haver::Protocol::Errors, since both clients and servers may want to
+	use it.
+
+2004-02-17  dylanwh <dylanwh@tampabay.rr.com>
+
+	* MANIFEST, t/first.t, t/test-1.pl: Added test to check the
+	filter's input and output.
+
+2004-02-17  dylanwh <dylanwh@tampabay.rr.com>
+
+	* Makefile.PL, README, lib/Haver.pm, lib/Haver/Base.pm,
+	lib/Haver/Protocol.pm, lib/Haver/Singleton.pm,
+	lib/Haver/Protocol/Filter.pm: Added documentation. README file
+	still sucks, though.  Still need to add descriptions of methods in
+	each of the modules.
+
+2004-02-16  dylanwh <dylanwh@tampabay.rr.com>
+
+	* lib/Haver/Base.pm: Made the client's output more JRC-like.
+
+2004-02-16  dylanwh <dylanwh@tampabay.rr.com>
+
+	* .cvsignore: Added .cvsignore files.
+
+2004-02-15  bdonlan <bdonlan@bd-home-comp.no-ip.org>
+
+	* MANIFEST, MANIFEST.SKIP: Add MANIFEST.bak and META.yml to
+	MANIFEST.SKIP
+
+2004-02-15  dylanwh <dylanwh@tampabay.rr.com>
+
+	* MANIFEST, MANIFEST.SKIP, MANIFEST.skip, Makefile.PL,
+	lib/Haver.pm: Fixed manifest files.
+
+2004-02-15  dylanwh <dylanwh@tampabay.rr.com>
+
+	* MANIFEST, MANIFEST.skip, Makefile.PL, README, lib/Haver.pm,
+	lib/Haver/Base.pm, lib/Haver/Protocol.pm, lib/Haver/Singleton.pm,
+	lib/Haver/Protocol/Filter.pm, lib/Haver/Utils/Logger.pm,
+	t/test-1.pl: Commiting common stuff.
+

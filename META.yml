@@ -1,0 +1,35 @@
+--- #YAML:1.0
+name: haver-common
+version: 0.043
+license: gpl
+distribution_type: module
+requires:
+  POE: 0.26
+  perl: 5.6.1
+recommends:
+  Haver::Client: 0.043
+  Haver::Server: 0.043
+build_requires: {}
+conflicts: {}
+provides:
+  Haver:
+    file: lib/Haver.pm
+    version: 0.043
+  Haver::Base:
+    file: lib/Haver/Base.pm
+    version: 0.01
+  Haver::Protocol:
+    file: lib/Haver/Protocol.pm
+    version: 0.02
+  Haver::Protocol::Errors:
+    file: lib/Haver/Protocol/Errors.pm
+    version: 0.01
+  Haver::Protocol::Filter:
+    file: lib/Haver/Protocol/Filter.pm
+    version: 0.02
+  Haver::Singleton:
+    file: lib/Haver/Singleton.pm
+    version: 0.03
+  Haver::Utils::Logger:
+    file: lib/Haver/Utils/Logger.pm
+generated_by: Module::Build version 0.21
